@@ -1,5 +1,16 @@
+
+:root {
+    --Primary: #247BA0;
+    --Secondary: #2B9720;
+    --Teriary: #64E9EE;
+    --PopupBackground: #001011;
+    --PageBackground: #121212;
+    --FontColor: white;
+}
+
 html, body {
-    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    font-family: Verdana, Helvetica, Arial, sans-serif;
+    color: var(--fontColor);
 }
 
 a, .btn-link {
@@ -42,6 +53,31 @@ h1:focus {
     color: white;
 }
 
-    .blazor-error-boundary::after {
-        content: "An error has occurred."
-    }
+.blazor-error-boundary::after {
+    content: "An error has occurred."
+}
+
+.navbar-header {
+    justify-content: flex-start;
+    display: flex;
+    align-content: center;
+    height: 70px;
+}
+
+.navbar-body {
+    background: var(--PopupBackground);
+}
+
+.header-link {
+    width: fit-content;
+    height: fit-content;
+}
+
+.content {
+    background-color: var(--PageBackground);
+    height: 100%;
+}
+
+.navsidebar {
+    box-shadow: 5px 0 10px var(--PopupBackground); /* Adjust values as needed */
+}

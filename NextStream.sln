@@ -2,7 +2,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.11.35327.3
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NextStream.AppHost", "NextStream.AppHost\NextStream.AppHost.csproj", "{78A60A34-2E8D-4286-B5CE-9DA9FCB47D6D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NextStream.AppHost", "NextStream.AppHost\NextStream.AppHost.csproj", "{78A60A34-2E8D-4286-B5CE-9DA9FCB47D6D}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NextStream.ServiceDefaults", "NextStream.ServiceDefaults\NextStream.ServiceDefaults.csproj", "{15EA2B4B-55E9-4698-A60B-F9E1C9C4FB74}"
 EndProject
