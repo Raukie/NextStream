@@ -5,12 +5,13 @@
     --Teriary: #64E9EE;
     --PopupBackground: #001011;
     --PageBackground: #121212;
-    --FontColor: white;
+    --PrimaryFontColor: mintcream;
 }
 
 html, body {
     font-family: Verdana, Helvetica, Arial, sans-serif;
-    color: var(--fontColor);
+    overflow: hidden;
+    color: var(--PrimaryFontColor)
 }
 
 a, .btn-link {
@@ -62,6 +63,7 @@ h1:focus {
     display: flex;
     align-content: center;
     height: 70px;
+    background-color:green;
 }
 
 .navbar-body {
@@ -71,6 +73,7 @@ h1:focus {
 .header-link {
     width: fit-content;
     height: fit-content;
+    padding: 10px;
 }
 
 .content {
