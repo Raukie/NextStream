@@ -11,7 +11,8 @@
 html, body {
     font-family: Verdana, Helvetica, Arial, sans-serif;
     overflow: hidden;
-    color: var(--PrimaryFontColor)
+    color: var(--PrimaryFontColor);
+    height: 100vh;
 }
 
 a, .btn-link {
@@ -79,8 +80,93 @@ h1:focus {
 .content {
     background-color: var(--PageBackground);
     height: 100%;
+    width: calc(100%-250px)!important;
 }
 
 .navsidebar {
     box-shadow: 5px 0 10px var(--PopupBackground); /* Adjust values as needed */
 }
+
+/* Movie overview */
+
+.Genres {
+    display: flex;
+    flex-direction: column;
+    gap: 50px;
+    overflow-y: scroll;
+    height: 100%;
+}
+
+/* Genre section container */
+.Genre {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+/* Genre name header */
+.GenreName {
+    font-size: 24px;
+    display: flex;
+    align-items: center;
+    color: white; /* optional, for visibility */
+    gap: 20px;
+}
+
+    .GenreName::before,
+    .GenreName::after {
+        content: "";
+        height: 2px;
+        background-color: white;
+        flex-grow: 1;
+    }
+
+    .GenreName::before {
+        flex-grow: 0;
+        width: 100px;
+    }
+
+    .GenreName::after {
+        flex-grow: 1;
+    }
+
+
+/* Container for a collection of movies */
+.MovieCollection {
+    display: flex;
+    flex-direction: row;
+    gap: 50px;
+    padding: 10px;
+}
+
+/* Single movie item */
+.Movie {
+    height: 250px;
+    width: auto;
+    display: flex;
+    flex-direction: column;
+    transition: ease-in-out 0.3s;
+    justify-content: space-between;
+}
+
+.Movie:hover {
+    transform: scale(1.1);
+}
+
+/* Movie thumbnail image */
+.MovieThumbnail {
+    width: 200px;
+    height: 200px;
+}
+/* Movie title text */
+.MovieTitle {
+    display: block; /* or inline-block */
+    text-overflow: ellipsis;
+    word-wrap: break-word;
+    overflow: hidden;
+    max-height: 3.6em;
+    line-height: 1.8em;
+    max-width: 200px;
+    bottom: 0;
+}
+

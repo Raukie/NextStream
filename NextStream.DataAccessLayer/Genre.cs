@@ -16,6 +16,5 @@ public partial class Genre
     [StringLength(256)]
     public string Name { get; set; } = null!;
 
-    [InverseProperty("Genre")]
-    public virtual ICollection<MovieGenre> MovieGenres { get; set; } = new List<MovieGenre>();
+    public virtual ICollection<Movie> Movies { get; set; } = new List<Movie>();
 }

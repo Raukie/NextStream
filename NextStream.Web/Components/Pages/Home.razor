@@ -1,6 +1,33 @@
 ﻿@page "/"
+@page "/Overview"
+@using NextStream.Services
+@inject MovieService movieService
+@inject NavigationManager Navigator
 
 <PageTitle>Movies</PageTitle>
+@{
+    var genres = movieService.GetMoviesWithGenres();
+}
 
-<h1>Welkom terug</h1>
+<div class="Genres"> 
+@foreach (var genre in genres)
+{
+    <div class="Genre">
+        <div class="GenreName">
+            @genre.Name
+        </div>
+        <div class="MovieCollection">
+            @foreach(var movie in genre.Movies)
+            {
+                <div class="Movie">
+                    <img class="MovieThumbnail" src="@(Navigator.BaseUri + $"Thumb/{movie.ThumbmailFileName}")" />
+                    <div class="MovieTitle">@movie.Title</div>
+                </div>
+            }
+        </div>
 
+    </div>
+}
+</div>
+@code {
+}

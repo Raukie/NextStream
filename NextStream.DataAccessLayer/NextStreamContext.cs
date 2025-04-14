@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text;
 using Microsoft.EntityFrameworkCore;
 
 namespace NextStream.DataAccessLayer;
@@ -13,6 +14,11 @@ public partial class NextStreamContext : DbContext
     public NextStreamContext(DbContextOptions<NextStreamContext> options)
         : base(options)
     {
+    }
+
+    public void SeedDatabaseWithUser()
+    {
+        
     }
 
     public virtual DbSet<Genre> Genres { get; set; }
@@ -29,34 +35,21 @@ public partial class NextStreamContext : DbContext
 
     public virtual DbSet<UserProfile> UserProfiles { get; set; }
 
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
-        => optionsBuilder.UseSqlServer("Data Source=laptop-ryan\\SQLEXPRESS;Initial Catalog=NextStream;Integrated Security=True;Trust Server Certificate=True");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Genre>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("PK__Genre__3214EC27697E2EFD");
+            entity.HasMany(e => e.Movies).WithMany(e => e.Genres).UsingEntity<MovieGenre>();
         });
 
         modelBuilder.Entity<Movie>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("PK__Movie__3214EC2773F364A1");
+            entity.HasMany(e => e.Genres).WithMany(e => e.Movies).UsingEntity<MovieGenre>();
         });
 
-        modelBuilder.Entity<MovieGenre>(entity =>
-        {
-            entity.HasKey(e => e.Id).HasName("PK__MovieGen__3214EC27CEF74E31");
-
-            entity.HasOne(d => d.Genre).WithMany(p => p.MovieGenres)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__MovieGenr__Genre__44FF419A");
-
-            entity.HasOne(d => d.Movie).WithMany(p => p.MovieGenres)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__MovieGenr__Movie__440B1D61");
-        });
 
         modelBuilder.Entity<MovieHistory>(entity =>
         {

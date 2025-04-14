@@ -1,0 +1,58 @@
+﻿@layout Layout.EmptyLayout
+@page "/ProfileSelection"
+@using NextStream.Services
+@inject NavigationManager Navigator
+@rendermode InteractiveServer
+
+<PageTitle>Profiles</PageTitle>
+
+<link href="/ProfileSelection.css" rel="stylesheet" />
+        <div class="ProfileSelection"> 
+            <div class="ProfileSelectionTitle">Kies een profiel</div>
+            <div class="Profiles">
+            <div @onclick="SelectProfile" class="Profile">
+                    <div class="ProfileIcon">
+
+                    </div>
+                    <div class="ProfileName">
+                        Ryan
+                    </div>
+                </div>
+            <div @onclick="SelectProfile" class="Profile">
+                    <div class="ProfileIcon">
+                    </div>
+                    <div class="ProfileName">
+                        Daan
+                    </div>
+                </div>
+            <div @onclick="SelectProfile" class="Profile">
+                    <div class="ProfileIcon">
+                    </div>
+                    <div class="ProfileName">
+                        Damian
+                    </div>
+                </div>
+            <div @onclick="SelectProfile" class="Profile">
+                    <div class="ProfileIcon">
+                    </div>
+                    <div class="ProfileName">
+                        Eray
+                    </div>
+                </div>
+            <div @onclick="SelectProfile" class="Profile">
+                    <div class="ProfileIcon">
+                    </div>
+                    <div class="ProfileName">
+                        Dawud
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+@code {
+    void SelectProfile()
+    {
+        Navigator.NavigateTo("/Overview");
+    }
+}

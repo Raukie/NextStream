@@ -1,14 +1,10 @@
 ﻿@page "/Login"
 @layout Layout.EmptyLayout
+@inject NavigationManager Navigator
 @rendermode InteractiveServer
 
-<html>
-<head>
-    <title>Login</title>
     <link href="/Login.css" rel="stylesheet" />
-</head>
 
-<body>
     <div class="LoginModal">
         <div class="ModalHeader">
             <img src="Images/Logo.png" height="165" />
@@ -21,7 +17,7 @@
                 <input type="password" name="Password" required placeholder="Wachtwoord..." />
             </div>
             <div class="FormInput">
-                <div id="LoginButton" class="LoginButton" onclick="SubmitForm">Inloggen</div>
+                <div @onclick="LoginHandler" id="LoginButton" class="LoginButton">Inloggen</div>
                 <label style="display:none;" id="LoginLabel"></label>
             </div>
             <hr />
@@ -32,5 +28,9 @@
             </div>
         </div>
     </div>
-</body>
-</html>
+@code {
+    void LoginHandler()
+    {
+        Navigator.NavigateTo("/Overview");
+    }
+}
