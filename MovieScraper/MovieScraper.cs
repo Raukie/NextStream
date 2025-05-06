@@ -1,9 +1,7 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using NextStream.MovieScraper.Models;
 using Newtonsoft.Json.Linq;
 using NextStream.DataAccessLayer;
-using System.Web;
 
 namespace NextStream.MovieScraper
 {
@@ -34,7 +32,7 @@ namespace NextStream.MovieScraper
 
                 if (searchResult == null) 
                 {
-                    _logger.LogError($"Could not process the following fitler into a search object '{searchResult}'");
+                    _logger.LogError($"Could not process the following filter into a search object '{searchResult}'");
                     continue;
                 }
 
@@ -152,7 +150,7 @@ namespace NextStream.MovieScraper
                 genres == null || genres.Count == 0 ||
                 string.IsNullOrWhiteSpace(year) ||
                 creator == null || creator.Count == 0 ||
-                !movieMetadata.Files.Any(f => f.Name == "__ia_thumb.jpg") ||
+                !movieMetadata.Files.Exists(f => f.Name == "__ia_thumb.jpg") ||
                 movieMetadata.Files == null || movieMetadata.Files.Count == 0)
             {
                 _logger.LogInformation("Skipping movie due to missing required fields.");
