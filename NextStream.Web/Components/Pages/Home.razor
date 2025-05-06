@@ -1,6 +1,7 @@
 ﻿@page "/"
 @page "/Overview"
 @using NextStream.Services
+@using NextStream.Services.DataTransferObjects
 @inject MovieService movieService
 @inject NavigationManager Navigator
 
@@ -29,5 +30,8 @@
     </div>
 }
 </div>
+
 @code {
+    private MovieInOverviewDTO? currentSelectedMovie = null;
+    
 }
