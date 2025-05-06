@@ -1,6 +1,8 @@
 ﻿@page "/EditProfile"
+@using Microsoft.AspNetCore.Authorization
 @using NextStream.Services
 @inject NavigationManager Navigator
+@attribute [Authorize]
 
 <PageTitle>EditProfile</PageTitle>
 @{

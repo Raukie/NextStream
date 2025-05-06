@@ -31,6 +31,20 @@ namespace NextStream.Services
             }
             return resultGenres.Where(genre=>genre.Movies.Count != 0).ToList();
         }
+
+        public MovieSelectedDTO? GetSelectedMovie(int selectedMovieId)
+        {
+            return _nextStreamContext.Movies.Select(movie => new MovieSelectedDTO()
+            {
+                Description = movie.Description,
+                Id = movie.Id,
+                Title = movie.Title,
+                Genres = movie.Genres.Select(genre=>genre.Name).ToList(),
+                ThumbmailFileName = $"{movie.Id}_thumb.jpg"
+            })
+            .FirstOrDefault(movie => movie.Id == selectedMovieId);
+        }
+
         public GenreDTO FetchNext(GenreDTO genreDTO)
         {
             var genre = _nextStreamContext.Genres.FirstOrDefault(genre => genre.Id == genreDTO.Id);

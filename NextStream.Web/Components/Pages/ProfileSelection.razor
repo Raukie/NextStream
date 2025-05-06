@@ -1,8 +1,10 @@
 ﻿@layout Layout.EmptyLayout
 @page "/ProfileSelection"
+@using Microsoft.AspNetCore.Authorization
 @using NextStream.Services
 @inject NavigationManager Navigator
 @rendermode InteractiveServer
+@attribute [Authorize]
 
 <PageTitle>Profiles</PageTitle>
 

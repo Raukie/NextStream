@@ -1,15 +1,33 @@
 ﻿@page "/"
 @page "/Overview"
+@attribute [Authorize]
+@using Microsoft.AspNetCore.Authorization
 @using NextStream.Services
 @using NextStream.Services.DataTransferObjects
+@using System.Text.RegularExpressions
 @inject MovieService movieService
 @inject NavigationManager Navigator
+@rendermode InteractiveServer
 
 <PageTitle>Movies</PageTitle>
 @{
     var genres = movieService.GetMoviesWithGenres();
 }
-
+@if (currentSelectedMovie != null)
+{
+    <div class="SelectedMovieDetails">
+        <div class="MovieDetailsButtons">
+            <button class="PlayButton" >Afspelen</button>
+            <button class="close-button" @onclick="() => currentSelectedMovie = null">×</button>
+        </div>
+        <h2>@currentSelectedMovie.Title</h2>
+        <div class="MovieDetails">
+            <p class="MovieDetailsDescription">@((MarkupString)FormatDescription(currentSelectedMovie.Description))</p>
+            <img class="MovieDetailsThumbnail" src="@(Navigator.BaseUri + $"Thumb/{currentSelectedMovie.ThumbmailFileName}")" alt="@currentSelectedMovie.Title" />
+        </div>
+            <p>@(string.Join(", ", currentSelectedMovie.Genres))</p>
+    </div>
+}
 <div class="Genres"> 
 @foreach (var genre in genres)
 {
@@ -20,7 +38,7 @@
         <div class="MovieCollection">
             @foreach(var movie in genre.Movies)
             {
-                <div class="Movie">
+                <div @onclick="() => SelectedMovie(movie.Id)" class="Movie">
                     <img class="MovieThumbnail" src="@(Navigator.BaseUri + $"Thumb/{movie.ThumbmailFileName}")" />
                     <div class="MovieTitle">@movie.Title</div>
                 </div>
@@ -32,6 +50,21 @@
 </div>
 
 @code {
-    private MovieInOverviewDTO? currentSelectedMovie = null;
-    
+    private MovieSelectedDTO? currentSelectedMovie = null;
+
+    private void SelectedMovie(int id)
+    {
+        if(currentSelectedMovie != null && currentSelectedMovie.Id == id)
+        {
+            currentSelectedMovie = null;
+            return;
+        }
+        currentSelectedMovie = movieService.GetSelectedMovie(id);
+    }
+
+    private string FormatDescription(string input)
+    {
+        var pattern = @"(?<=^|<br\s*/?>)(\s*)(Title|Summary|Directed by|Actors|Production Company|Release Date|Aspect Ratio):";
+        return Regex.Replace(input, pattern, "$1<strong>$2:</strong>", RegexOptions.IgnoreCase);
+    }
 }

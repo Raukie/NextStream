@@ -13,9 +13,10 @@ public partial class User
     [Column("ID")]
     public int Id { get; set; }
 
-    [Column("UserID")]
-    public int UserId { get; set; }
-
+    [MaxLength(512)]
+    public string Email { get; set; }
+    [MaxLength(512)]
+    public string PasswordHash { get; set; }
     [InverseProperty("User")]
     public virtual ICollection<UserProfile> UserProfiles { get; set; } = new List<UserProfile>();
 }
