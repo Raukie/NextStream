@@ -14,15 +14,15 @@ public partial class Movie
     public int Id { get; set; }
 
     [StringLength(256)]
-    public string Title { get; set; } = null!;
+    public string? Title { get; set; } = null;
 
     [Column("ApiID")]
-    public string ApiId { get; set; } = null!;
+    public string? ApiId { get; set; } = null;
 
-    public string Description { get; set; } = null!;
+    public string? Description { get; set; } = null;
 
     [StringLength(256)]
-    public string OriginalFilePath { get; set; } = null!;
+    public string? OriginalFilePath { get; set; } = null;
 
     public bool ProcessedIntoStreamableFormat { get; set; }
 

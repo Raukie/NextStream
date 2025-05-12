@@ -10,9 +10,15 @@
 
 html, body {
     font-family: Verdana, Helvetica, Arial, sans-serif;
-    overflow: hidden;
+    overflow: auto;
+    overflow-x: hidden;
     color: var(--PrimaryFontColor);
     height: 100vh;
+}
+
+
+body {
+    overflow-y: hidden;
 }
 
 a, .btn-link {
@@ -79,8 +85,9 @@ h1:focus {
 
 .content {
     background-color: var(--PageBackground);
-    height: 100%;
-    width: calc(100%-250px)!important;
+    height: calc(100vh - 11px);
+    width: calc(100%-250px) !important;
+    overflow-y: scroll;
 }
 
 .navsidebar {
@@ -93,8 +100,9 @@ h1:focus {
     display: flex;
     flex-direction: column;
     gap: 50px;
-    overflow-y: scroll;
+    overflow-x: scroll;
     height: 100%;
+    overflow-y: scroll;
 }
 
 /* Genre section container */
@@ -141,169 +149,238 @@ h1:focus {
     width: calc(100vw - 270px);
 }
 
+.MovieSearchCollection {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    padding: 10px;
+    justify-content: flex-start;
+    width: calc(100vw - 270px);
+    box-sizing: border-box;
+}
+
 .MovieCollection {
     -ms-overflow-style: none; /* Internet Explorer 10+ */
     scrollbar-width: none; /* Firefox */
+}
+
+@media (max-width: 640.98px) {
+    .MovieSearchCollection {
+        width: 100vw;
+    }
+
+    .MovieCollection {
+        width: 100vw;
+    }
 }
 
     .MovieCollection::-webkit-scrollbar {
         display: none; /* Safari and Chrome */
     }
 
-/* Single movie item */
-.Movie {
-    height: 250px;
-    width: auto;
-    display: flex;
-    flex-direction: column;
-    transition: ease-in-out 0.3s;
-    justify-content: space-between;
-}
+    /* Single movie item */
+    .Movie {
+        height: 250px;
+        width: auto;
+        display: flex;
+        flex-direction: column;
+        transition: ease-in-out 0.3s;
+        justify-content: space-between;
+    }
 
-.Movie:hover {
-    transform: scale(1.1);
-}
+        .Movie:hover {
+            transform: scale(1.1);
+        }
 
-/* Movie thumbnail image */
-.MovieThumbnail {
-    width: 200px;
-    height: 200px;
-}
-/* Movie title text */
-.MovieTitle {
-    display: block; /* or inline-block */
-    text-overflow: ellipsis;
-    word-wrap: break-word;
-    overflow: hidden;
-    max-height: 3.6em;
-    line-height: 1.8em;
-    max-width: 200px;
-    bottom: 0;
-}
-
-
-
-.SelectedMovieDetails {
-    position: absolute;
-    margin-left: -32px;
-    margin-top: -16px;
-    max-height: 55vh;
-    background-color: var(--PopupBackground);
-    color: var(--PrimaryFontColor);
-    padding: 1rem;
-    box-shadow: 0 -5px 20px rgba(0, 0, 0, 0.6);
-    z-index: 1000;
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-    overflow-y: auto;
-    transition: transform 0.3s ease-in-out;
-}
+    /* Movie thumbnail image */
+    .MovieThumbnail {
+        width: 200px;
+        height: 200px;
+    }
+    /* Movie title text */
+    .MovieTitle {
+        display: block; /* or inline-block */
+        text-overflow: ellipsis;
+        word-wrap: break-word;
+        overflow: hidden;
+        max-height: 3.6em;
+        line-height: 1.8em;
+        max-width: 200px;
+        bottom: 0;
+    }
 
 
 
-/* Optional close button styling */
-.SelectedMovieDetails .close-button {
-    align-self: flex-end;
-    background: none;
-    border: none;
-    font-size: 1.5rem;
-    color: var(--PrimaryFontColor);
-    cursor: pointer;
-}
-
-.MovieDetails {
-    position:relative;
-    display: flex; 
-    flex-direction: row;
-    justify-content: space-between;
-}
-
-.MovieDetailsThumbnail {
-    max-width: 100%;
-    max-height: 100%;
-    margin: auto;
-}
-
-.MovieDetailsDescription {
-    width: 50%;
-    max-height: 40vh;
-    overflow: auto;
-}
-
-.MovieDetailsButtons {
-    justify-content: space-between;
-    display: flex;
-    flex-direction: row;
-}
-
-/* Fullscreen on smaller screens */
-@media (max-width: 768px) {
     .SelectedMovieDetails {
-        height: 82vh;
         position: absolute;
         margin-left: -32px;
         margin-top: -16px;
-    }
-
-    .MovieDetails {
+        max-height: 55vh;
+        background-color: var(--PopupBackground);
+        color: var(--PrimaryFontColor);
+        padding: 1rem;
+        box-shadow: 0 -5px 20px rgba(0, 0, 0, 0.6);
+        z-index: 1000;
         display: flex;
         flex-direction: column;
+        gap: 1rem;
+        overflow-y: auto;
+        transition: transform 0.3s ease-in-out;
+    }
+
+
+
+        /* Optional close button styling */
+        .SelectedMovieDetails .close-button {
+            align-self: flex-end;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: var(--PrimaryFontColor);
+            cursor: pointer;
+        }
+
+    .MovieDetails {
+        position: relative;
+        display: flex;
+        flex-direction: row;
         justify-content: space-between;
-        flex-direction: column-reverse;
     }
 
     .MovieDetailsThumbnail {
-        width: 100%;
+        max-width: 100%;
+        max-height: 100%;
+        margin: auto;
     }
 
     .MovieDetailsDescription {
-        width: 100%;
-        max-height: 100%;
+        width: 50%;
+        max-height: 40vh;
+        overflow: auto;
     }
-}
 
-.PlayButton {
-    background-color: var(--Secondary);
-    border: 1px solid var(--Secondary);
-    color: white;
-    padding: 11px;
-    padding-top: 3px;
-    padding-bottom: 3px;
-    cursor: pointer;
-    border-radius: 8px;
-    align-content: center;
-    width: 150px;
-    font-size: 20px;
-    text-align: center;
-    transition: ease-in-out 0.3s;
-}
+    .MovieDetailsButtons {
+        justify-content: space-between;
+        display: flex;
+        flex-direction: row;
+        position: sticky;
+    }
 
-.PlayButton:hover {
-    transform: scale(1.1);
-}
+    /* Fullscreen on smaller screens */
+    @media (max-width: 768px) {
+        .SelectedMovieDetails {
+            height: 100vh;
+            position: absolute;
+            margin-left: -32px;
+            margin-top: -16px;
+            max-height: 82vh;
+        }
+
+        .MovieDetails {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            flex-direction: column-reverse;
+        }
+
+        .MovieDetailsThumbnail {
+            width: 100%;
+        }
+
+        .MovieDetailsDescription {
+            width: 100%;
+            max-height: 100%;
+        }
+    }
+
+    .PlayButton {
+        background-color: var(--Secondary);
+        border: 1px solid var(--Secondary);
+        color: white;
+        padding: 11px;
+        padding-top: 3px;
+        padding-bottom: 3px;
+        cursor: pointer;
+        border-radius: 8px;
+        align-content: center;
+        width: 150px;
+        font-size: 20px;
+        text-align: center;
+        transition: ease-in-out 0.3s;
+    }
+
+        .PlayButton:hover {
+            transform: scale(1.1);
+        }
+
+    /* Global thin scrollbar */
+    ::-webkit-scrollbar {
+        width: 6px;
+        height: 6px;
+    }
+
+    ::-webkit-scrollbar-track {
+        background: transparent;
+    }
+
+    ::-webkit-scrollbar-thumb {
+        background-color: rgba(255, 255, 255, 0.2);
+        border-radius: 10px;
+    }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background-color: rgba(255, 255, 255, 0.4);
+        }
+
+    /* Firefox support */
+    * {
+        scrollbar-width: thin;
+        scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
+    }
+
+    /* Searchbar */
+
+
+
+    .search-bar {
+        background: linear-gradient(var(--PopupBackground), var(--PopupBackground)) padding-box, linear-gradient(to right, darkblue, darkorchid) border-box;
+        border-radius: 50em;
+        border: 4px solid transparent;
+        padding: 5px;
+    }
+
+    .search-input {
+        width: 300px;
+        border: unset;
+        color: white;
+        background: var(--PopupBackground);
+        text-indent: 30px;
+    }
+
+        .search-input:focus {
+            border: unset;
+            outline: none;
+        }
+
+    .search-icon {
+        position: absolute;
+    }
 
 /* Global thin scrollbar */
-::-webkit-scrollbar {
+html::-webkit-scrollbar {
     width: 6px;
     height: 6px;
 }
 
-::-webkit-scrollbar-track {
+html::-webkit-scrollbar-track {
     background: transparent;
 }
 
-::-webkit-scrollbar-thumb {
+html::-webkit-scrollbar-thumb {
     background-color: rgba(255, 255, 255, 0.2);
     border-radius: 10px;
 }
 
-    ::-webkit-scrollbar-thumb:hover {
+    html::-webkit-scrollbar-thumb:hover {
         background-color: rgba(255, 255, 255, 0.4);
     }
-
-/* Firefox support */
-* {
-    scrollbar-width: thin;
-    scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
-}

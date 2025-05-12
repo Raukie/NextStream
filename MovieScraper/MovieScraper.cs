@@ -2,6 +2,8 @@
 using NextStream.MovieScraper.Models;
 using Newtonsoft.Json.Linq;
 using NextStream.DataAccessLayer;
+using Xabe.FFmpeg;
+
 
 namespace NextStream.MovieScraper
 {
@@ -150,7 +152,11 @@ namespace NextStream.MovieScraper
                 genres == null || genres.Count == 0 ||
                 string.IsNullOrWhiteSpace(year) ||
                 creator == null || creator.Count == 0 ||
-                !movieMetadata.Files.Exists(f => f.Name == "__ia_thumb.jpg") ||
+                !movieMetadata.Files.Exists(f => f.Name == "__ia_thumb.jpg") || 
+                (
+                !movieMetadata.Files.Exists(f => f.Name.EndsWith(".mp4", StringComparison.OrdinalIgnoreCase)) &&
+                !movieMetadata.Files.Exists(f => f.Name.EndsWith(".mpeg", StringComparison.OrdinalIgnoreCase)))
+                 ||
                 movieMetadata.Files == null || movieMetadata.Files.Count == 0)
             {
                 _logger.LogInformation("Skipping movie due to missing required fields.");
@@ -203,35 +209,98 @@ namespace NextStream.MovieScraper
             await _movieContext.SaveChangesAsync();
             _logger.LogInformation($"Added movie '{newMovie.Title}' to database with ID {newMovie.Id}.");
 
-            // 🖼️ Download thumbnail image
+            // Download thumbnail image
             var thumbFile = movieMetadata.Files.FirstOrDefault(f => f.Name == "__ia_thumb.jpg");
+            var movieFile = movieMetadata.Files.FirstOrDefault(f => f.Name.EndsWith(".mp4", StringComparison.InvariantCultureIgnoreCase)
+            || f.Name.EndsWith(".mpeg", StringComparison.InvariantCultureIgnoreCase));
             try
             {
-                string thumbnailUrl = $"https://archive.org/download/{movieMetadata.Identifier}/{thumbFile.Name}";
-                string localFileName = $"{newMovie.Id}_thumb.jpg";
+                string thumbnailUrl = $"https://archive.org/download/{movieMetadata.Identifier}/{thumbFile!.Name}";
+                string movieUrl = $"https://archive.org/download/{movieMetadata.Identifier}/{movieFile!.Name}";
+                string localFileName = $"M_{newMovie.Id}";
                 string thumbnailDirectory = "C:\\NextStream\\Thumbnails";
+                string MovieDirectory = $"C:\\NextStream\\Movies\\M_{newMovie.Id}";
 
                 if (!Directory.Exists(thumbnailDirectory))
                 {
                     Directory.CreateDirectory(thumbnailDirectory);
                 }
 
-                string fullFilePath = Path.Combine(thumbnailDirectory, localFileName);
+                if (!Directory.Exists(MovieDirectory))
+                {
+                    Directory.CreateDirectory(MovieDirectory);
+                }
+
+                if (!Directory.Exists(Path.Combine(MovieDirectory, "hls")))
+                {
+                    Directory.CreateDirectory(Path.Combine(MovieDirectory, "hls"));
+                }
+
+                string fullFilePath = Path.Combine(thumbnailDirectory, localFileName+".jpg");
                 using var response = await _requestHelper.GetHttpResponseAsync(thumbnailUrl);
                 response.EnsureSuccessStatusCode();
 
+                string movieFilePath = Path.Combine(MovieDirectory, $"{localFileName}.mp4");
+                string hlsDirectory = Path.Combine(MovieDirectory, "hls");
+
+                using var movieResponse = await _requestHelper.GetHttpResponseAsync(movieUrl);
+                movieResponse.EnsureSuccessStatusCode();
+
+                using var movieStream = new FileStream(movieFilePath, FileMode.Create);
+                await movieResponse.Content.CopyToAsync(movieStream);
+                movieStream.Close();
                 using var fs = new FileStream(fullFilePath, FileMode.Create);
                 await response.Content.CopyToAsync(fs);
 
-                _logger.LogInformation($"Thumbnail downloaded and saved to {fullFilePath}");
+                _logger.LogInformation($"Movie downloaded to {movieFilePath}");
+
+                // Convert to HLS
+                bool converted = await ConvertToHlsAsync(movieFilePath, hlsDirectory);
+                newMovie.ProcessedIntoStreamableFormat = converted;
+                await _movieContext.SaveChangesAsync();
+
+
+                _logger.LogInformation($"Thumbnail and movie downloaded and saved to {fullFilePath} and {movieFilePath}");
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Failed to download or save thumbnail for '{movieMetadata.Identifier}': {ex.Message}");
+                _logger.LogError($"Failed to download or save thumbnail or movie for '{movieMetadata.Identifier}': {ex.Message}");
             }
         }
 
-        private DateTime? ParseYearToDate(string year)
+
+private async Task<bool> ConvertToHlsAsync(string inputFilePath, string outputDirectory)
+    {
+        try
+        {
+            if (!Directory.Exists(outputDirectory))
+            {
+                Directory.CreateDirectory(outputDirectory);
+            }
+
+            string outputPath = Path.Combine(outputDirectory, "index.m3u8");
+
+            var conversion = FFmpeg.Conversions.New()
+                .AddParameter($"-i \"{inputFilePath}\"")
+                .AddParameter("-codec: copy")
+                .AddParameter("-start_number 0")
+                .AddParameter("-hls_time 10")
+                .AddParameter("-hls_list_size 0")
+                .AddParameter($"-f hls \"{outputPath}\"", ParameterPosition.PostInput);
+            var result = await conversion.Start();
+            File.Delete(inputFilePath);
+
+            _logger.LogInformation($"HLS conversion completed: {outputPath}");
+            return true;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError($"Error during HLS conversion: {ex.Message}");
+            return false;
+        }
+    }
+
+    private DateTime? ParseYearToDate(string year)
         {
             if (int.TryParse(year, out var y) && y > 1800 && y <= DateTime.Now.Year)
             {

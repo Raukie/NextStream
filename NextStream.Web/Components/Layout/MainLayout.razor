@@ -1,4 +1,5 @@
-﻿@inherits LayoutComponentBase
+﻿@using Microsoft.AspNetCore.Components.Sections
+@inherits LayoutComponentBase
 @inject NavigationManager Navigator
 
 <div class="page">
@@ -9,15 +10,7 @@
     <main>
         
     <div class="content-bar">
-        @if (shouldShowElement)
-        {
-            <div class="search-bar">
-                <div class="search-icon material-symbols-outlined">
-                    search
-                </div>
-                <input class="search-input" type="text" maxlength="30" placeholder="Zoek op jaar of titel" />
-            </div>
-        }
+            <SectionOutlet @rendermode="InteractiveServer"  SectionName="NavBarTopRight" />
     </div>
         <article class="content px-4">
             @Body

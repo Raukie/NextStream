@@ -26,8 +26,12 @@ public class BlazorCookieLoginMiddleware
         _next = next;
     }
 
-    public async Task Invoke(HttpContext context, UserService userService)
+    public async Task Invoke(HttpContext context, UserService userService, UserDataService userData)
     {
+        if(context.User.Identity?.Name != null)
+        {
+            userData.UserName = context.User.Identity.Name;
+        }
         if (context.Request.Path == "/login" && context.Request.Query.ContainsKey("key"))
         {
             var key = Guid.Parse(context.Request.Query["key"]!);
@@ -44,6 +48,8 @@ public class BlazorCookieLoginMiddleware
             var claims = new List<Claim> {
                     new Claim(ClaimTypes.Name, info.Email!)
                 };
+
+            userData.UserName = info.Email;
             var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
             var principal = new ClaimsPrincipal(identity);
 

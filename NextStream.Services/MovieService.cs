@@ -4,9 +4,27 @@ using NextStream.Services.DataTransferObjects;
 
 namespace NextStream.Services
 {
-    public class MovieService(NextStreamContext nextStreamContext)
+    public class MovieService(NextStreamContext nextStreamContext, UserService userService)
     {
         private readonly NextStreamContext _nextStreamContext = nextStreamContext ?? throw new ArgumentNullException(nameof(nextStreamContext));
+
+        public MovieWatchingDTO? GetMovieToWatch(int id)
+        {
+            var movie = _nextStreamContext.Movies.FirstOrDefault(movie => movie.Id == id);
+            if(movie == null)
+            {
+                return null;
+            }
+
+            var history = userService.GetMovieHistory(movie.Id);
+            return new MovieWatchingDTO()
+            {
+                ID = movie.Id,
+                TimeIndex = history?.TimeIndex ?? 0,
+                Title = movie.Title,
+                URL = $"/Movies/M_{movie.Id}/hls/index.m3u8",
+            };
+        }
 
         public List<GenreDTO> GetMoviesWithGenres() 
         {
@@ -24,7 +42,7 @@ namespace NextStream.Services
                         {
                             Id = movie.Id,
                             Title = movie.Title,
-                            ThumbmailFileName = $"{movie.Id}_thumb.jpg"
+                            ThumbmailFileName = $"M_{movie.Id}.jpg"
                         };
                     }).ToList()
                 });
@@ -40,7 +58,7 @@ namespace NextStream.Services
                 Id = movie.Id,
                 Title = movie.Title,
                 Genres = movie.Genres.Select(genre=>genre.Name).ToList(),
-                ThumbmailFileName = $"{movie.Id}_thumb.jpg"
+                ThumbmailFileName = $"M_{movie.Id}.jpg"
             })
             .FirstOrDefault(movie => movie.Id == selectedMovieId);
         }
@@ -65,7 +83,7 @@ namespace NextStream.Services
                     {
                         Id = movie.Id,
                         Title = movie.Title,
-                        ThumbmailFileName = $"{movie.Id}_thumb.jpg"
+                        ThumbmailFileName = $"M_{movie.Id}.jpg"
                     };
                 }).ToList()
             };
@@ -79,7 +97,7 @@ namespace NextStream.Services
                     {
                         Id = movie.Id,
                         Title = movie.Title,
-                        ThumbmailFileName = $"{movie.Id}_thumb.jpg"
+                        ThumbmailFileName = $"M_{movie.Id}.jpg"
                     };
                 }).ToList();
             }
@@ -118,6 +136,26 @@ namespace NextStream.Services
             };
 
             return newGenreDto;
+        }
+
+        public List<MovieInOverviewDTO> Search(string query)
+        {
+            var tokens = query.Split(' ', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+            var titleQuery = string.Join(' ', tokens.Where(t => !int.TryParse(t, out _)));
+            var yearTokens = tokens.Where(t => int.TryParse(t, out _)).ToList();
+
+            return _nextStreamContext.Movies
+                .Where(movie =>
+                    (!string.IsNullOrWhiteSpace(titleQuery) && movie.Title!.Contains(titleQuery)) ||
+                    yearTokens.Any(y => movie.Published.ToString().Contains(y))
+                )
+                .Select(movie => new MovieInOverviewDTO
+                {
+                    Id = movie.Id,
+                    Title = movie.Title!,
+                    ThumbmailFileName = $"M_{movie.Id}.jpg"
+                })
+                .ToList();
         }
     }
 }

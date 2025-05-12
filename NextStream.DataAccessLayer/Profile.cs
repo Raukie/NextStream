@@ -15,6 +15,8 @@ public partial class Profile
 
     [StringLength(64)]
     public string Name { get; set; } = null!;
+    [StringLength(64)]
+    public string Color { get; set; } = null!;
 
     [InverseProperty("Profile")]
     public virtual ICollection<UserProfile> UserProfiles { get; set; } = new List<UserProfile>();

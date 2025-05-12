@@ -1,8 +1,12 @@
 ﻿@layout Layout.EmptyLayout
 @page "/ProfileSelection"
 @using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components.Authorization
 @using NextStream.Services
 @inject NavigationManager Navigator
+@inject UserService userService
+@inject AuthenticationStateProvider AuthProvider
+@inject UserDataService userDataService
 @rendermode InteractiveServer
 @attribute [Authorize]
 
@@ -12,49 +16,27 @@
         <div class="ProfileSelection"> 
             <div class="ProfileSelectionTitle">Kies een profiel</div>
             <div class="Profiles">
-            <div @onclick="SelectProfile" class="Profile">
-                    <div class="ProfileIcon">
+        @foreach (var profile in userService.GetProfiles(userDataService.UserName))
+        {
+            <div style="background-color:@profile.Color;" @onclick="()=>{SelectProfile(profile.ID);}" class="Profile">
+                <div  class="ProfileIcon">
 
-                    </div>
-                    <div class="ProfileName">
-                        Ryan
-                    </div>
                 </div>
-            <div @onclick="SelectProfile" class="Profile">
-                    <div class="ProfileIcon">
-                    </div>
-                    <div class="ProfileName">
-                        Daan
-                    </div>
+                <div class="ProfileName">
+                    @profile.Name
                 </div>
-            <div @onclick="SelectProfile" class="Profile">
-                    <div class="ProfileIcon">
-                    </div>
-                    <div class="ProfileName">
-                        Damian
-                    </div>
-                </div>
-            <div @onclick="SelectProfile" class="Profile">
-                    <div class="ProfileIcon">
-                    </div>
-                    <div class="ProfileName">
-                        Eray
-                    </div>
-                </div>
-            <div @onclick="SelectProfile" class="Profile">
-                    <div class="ProfileIcon">
-                    </div>
-                    <div class="ProfileName">
-                        Dawud
-                    </div>
-                </div>
+            </div> 
+        }
+
             </div>
         </div>
 
 
 @code {
-    void SelectProfile()
+
+    void SelectProfile(int profileId)
     {
+        userService.SetCurrentProfile(profileId);
         Navigator.NavigateTo("/Overview");
     }
 }

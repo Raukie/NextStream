@@ -2,6 +2,7 @@
 @page "/Overview"
 @attribute [Authorize]
 @using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components.Sections
 @using NextStream.Services
 @using NextStream.Services.DataTransferObjects
 @using System.Text.RegularExpressions
@@ -13,11 +14,23 @@
 @{
     var genres = movieService.GetMoviesWithGenres();
 }
-@if (currentSelectedMovie != null)
+<SectionContent SectionName="NavBarTopRight">
+    <div class="search-bar">
+        <div class="search-icon material-symbols-outlined">
+            search
+        </div>
+        <input  @oninput="OnChangeSearchInput" class="search-input" type="text" maxlength="30" placeholder="Zoek op jaar of titel" />
+    </div>
+</SectionContent>
+
+<script src="/lib/video.js/video.min.js"></script>
+<link rel="stylesheet" href="/lib/video.js/video-js.min.css" />
+
+@if (currentSelectedMovie != null && currentlyWatchingMovie != null)
 {
     <div class="SelectedMovieDetails">
         <div class="MovieDetailsButtons">
-            <button class="PlayButton" >Afspelen</button>
+            <button @onclick="PlayMovie" class="PlayButton" >Afspelen</button>
             <button class="close-button" @onclick="() => currentSelectedMovie = null">×</button>
         </div>
         <h2>@currentSelectedMovie.Title</h2>
@@ -29,28 +42,51 @@
     </div>
 }
 <div class="Genres"> 
-@foreach (var genre in genres)
-{
-    <div class="Genre">
-        <div class="GenreName">
-            @genre.Name
-        </div>
-        <div class="MovieCollection">
-            @foreach(var movie in genre.Movies)
-            {
-                <div @onclick="() => SelectedMovie(movie.Id)" class="Movie">
-                    <img class="MovieThumbnail" src="@(Navigator.BaseUri + $"Thumb/{movie.ThumbmailFileName}")" />
-                    <div class="MovieTitle">@movie.Title</div>
+    @if(foundMovies == null)
+    {
+        @foreach (var genre in genres)
+        {
+            <div class="Genre">
+                <div class="GenreName">
+                    @genre.Name
                 </div>
-            }
-        </div>
+                <div class="MovieCollection">
+                    @foreach (var movie in genre.Movies)
+                    {
+                        <div @onclick="() => SelectedMovie(movie.Id)" class="Movie">
+                            <img class="MovieThumbnail" src="@(Navigator.BaseUri + $"Thumb/{movie.ThumbmailFileName}")" />
+                            <div class="MovieTitle">@movie.Title</div>
+                        </div>
+                    }
+                </div>
 
-    </div>
-}
+            </div>
+        }
+    } else
+    {
+            <div class="Genre">
+                <div class="GenreName">
+                    Zoeken
+                </div>
+                <div class="MovieSearchCollection">
+                    @foreach (var movie in foundMovies)
+                    {
+                        <div @onclick="() => SelectedMovie(movie.Id)" class="Movie">
+                            <img class="MovieThumbnail" src="@(Navigator.BaseUri + $"Thumb/{movie.ThumbmailFileName}")" />
+                            <div class="MovieTitle">@movie.Title</div>
+                        </div>
+                    }
+                </div>
+            </div>
+    }
+
 </div>
 
 @code {
     private MovieSelectedDTO? currentSelectedMovie = null;
+    private MovieWatchingDTO? currentlyWatchingMovie = null;
+    private List<MovieInOverviewDTO>? foundMovies = null;
+    private string? searchString = null;
 
     private void SelectedMovie(int id)
     {
@@ -60,11 +96,29 @@
             return;
         }
         currentSelectedMovie = movieService.GetSelectedMovie(id);
+        currentlyWatchingMovie = movieService.GetMovieToWatch(id);
+    }
+
+    private void PlayMovie()
+    {
+        Navigator.NavigateTo("/Watch?movie="+currentSelectedMovie!.Id, true);
     }
 
     private string FormatDescription(string input)
     {
         var pattern = @"(?<=^|<br\s*/?>)(\s*)(Title|Summary|Directed by|Actors|Production Company|Release Date|Aspect Ratio):";
         return Regex.Replace(input, pattern, "$1<strong>$2:</strong>", RegexOptions.IgnoreCase);
+    }
+
+    private void OnChangeSearchInput(ChangeEventArgs @event)
+    {
+     string? searchString = @event.Value as string;
+
+        if(searchString == null || searchString.Length < 4)
+        {
+            foundMovies = null;
+            return;
+        }
+        foundMovies = movieService.Search(searchString);
     }
 }

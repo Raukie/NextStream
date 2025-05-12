@@ -1,0 +1,15 @@
+{
+  "version": "1.0",
+  "defaultProvider": "cdnjs",
+  "libraries": [
+    {
+      "provider": "cdnjs",
+      "library": "video.js@8.22.0",
+      "destination": "wwwroot/lib/video.js/",
+      "files": [
+        "video.min.js",
+        "video-js.min.css"
+      ]
+    }
+  ]
+}

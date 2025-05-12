@@ -12,6 +12,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\NextStream.DataAccessLayer\NextStream.DataAccessLayer.csproj" />
+    <ProjectReference Include="..\NextStream.ServiceDefaults\NextStream.ServiceDefaults.csproj" />
   </ItemGroup>
 
 </Project>

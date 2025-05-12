@@ -31,7 +31,8 @@ namespace NextStream.MovieScraper
 
             _httpClient = new HttpClient
             {
-                BaseAddress = new Uri("https://brave-api.archive.org/")
+                BaseAddress = new Uri("https://brave-api.archive.org/"),
+                Timeout = TimeSpan.FromHours(1)
             };
 
             var rateLimitPolicy = Policy.RateLimitAsync(200, TimeSpan.FromSeconds(60), 200);

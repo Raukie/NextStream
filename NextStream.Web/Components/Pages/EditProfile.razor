@@ -1,14 +1,135 @@
 ﻿@page "/EditProfile"
 @using Microsoft.AspNetCore.Authorization
 @using NextStream.Services
+@using NextStream.Services.DataTransferObjects
+@inject UserService UserService
 @inject NavigationManager Navigator
 @attribute [Authorize]
+@rendermode InteractiveServer
 
-<PageTitle>EditProfile</PageTitle>
+<PageTitle>Bewerk profiel</PageTitle>
+
 <h2>Bewerk profiel</h2>
-@{
+
+@if (profile != null)
+{
+    <div class="form-group">
+        <label for="profileName">Naam</label>
+        <input id="profileName" class="form-control" @bind="profile.Name" @oninput="OnNameChanged" />
+        @if (string.IsNullOrWhiteSpace(profile.Name))
+        {
+            <div class="text-danger">Naam mag niet leeg zijn.</div>
+        }
+    </div>
+
+    <div class="form-group mt-3">
+        <label>Kies een kleur</label>
+        <div class="d-flex flex-wrap gap-2 mt-2">
+            @foreach (var pastel in pastelColors)
+            {
+                <div class="color-swatch-container @(profile.Color == pastel.Value ? "selected" : "")"
+                     @onclick="() => OnColorChanged(pastel.Value)">
+                    <div class="color-swatch" style="background-color: @pastel.Value;"></div>
+                    @if (profile.Color == pastel.Value)
+                    {
+                        <div class="checkmark">✔</div>
+                    }
+                </div>
+
+            }
+        </div>
+    </div>
+    <div class="form-group mt-3">
+        <label>Voorkeuren</label>
+        <div class="d-flex flex-wrap gap-2 mt-2">
+           
+        </div>
+    </div>
 }
+else
+{
+    <p>Profiel wordt geladen...</p>
+}
+
+<style>
+    .color-swatch-container {
+        position: relative;
+        width: 40px;
+        height: 40px;
+        display: inline-block;
+        cursor: pointer;
+    }
+
+    .color-swatch {
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+        border: 2px solid transparent;
+        transition: border 0.2s ease-in-out;
+    }
+
+    .color-swatch-container.selected .color-swatch {
+        border: 3px solid black;
+    }
+
+    .checkmark {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        font-size: 18px;
+        font-weight: bold;
+        color: black;
+        pointer-events: none;
+    }
+</style>
 
 
 @code {
+    private UserProfileDTO? profile;
+
+    private readonly List<(string Name, string Value)> pastelColors = new()
+    {
+        ("Pastel Rood", "#FFB3BA"),
+        ("Pastel Oranje", "#FFDFBA"),
+        ("Pastel Geel", "#FFFFBA"),
+        ("Pastel Groen", "#BAFFC9"),
+        ("Pastel Blauw", "#BAE1FF"),
+        ("Pastel Paars", "#DCC6E0"),
+        ("Pastel Roze", "#FADADD"),
+        ("Pastel Mint", "#AAF0D1"),
+        ("Pastel Perzik", "#FFDAB9"),
+        ("Pastel Lila", "#E6E6FA"),
+        ("Pastel IJsblauw", "#B0E0E6"),
+        ("Pastel Zalm", "#FFB19A"),
+        ("Pastel Crème", "#FFFDD0"),
+        ("Pastel Koraal", "#F88379"),
+        ("Pastel Hemelsblauw", "#C0E8F9")
+    };
+
+    protected override void OnInitialized()
+    {
+        profile = UserService.GetCurrentProfile();
+    }
+
+    private void OnNameChanged(ChangeEventArgs e)
+    {
+        if (profile == null) return;
+
+        var newName = e.Value?.ToString()?.Trim() ?? "";
+
+        if (!string.IsNullOrWhiteSpace(newName))
+        {
+            profile.Name = newName;
+            UserService.UpdateProfileName(newName);
+        }
+    }
+
+    private void OnColorChanged(string color)
+    {
+        if (profile == null || profile.Color == color) return;
+
+        profile.Color = color;
+        UserService.UpdateProfileColor(color);
+    }
 }

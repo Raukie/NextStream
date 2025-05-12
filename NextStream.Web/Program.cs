@@ -4,6 +4,7 @@ using NextStream.DataAccessLayer;
 using Microsoft.Extensions.FileProviders;
 using NextStream.Services;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Components.Authorization;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -22,7 +23,7 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
         options.AccessDeniedPath = "/login";
     });
 
-builder.Services.AddAuthorization();
+builder.Services.AddAuthorizationCore().AddAuthorizationCore();
 
 builder.Services.AddLogging(logging =>
 {
@@ -35,7 +36,9 @@ builder.Services.AddHttpContextAccessor();
 builder.Services.AddOutputCache();
 builder.Services.AddSqlServer<NextStreamContext>("Data Source=localhost\\SQLEXPRESS;Initial Catalog=NextStream;Integrated Security=True;Trust Server Certificate=True");
 builder.Services.AddScoped(typeof(MovieService));
-builder.Services.AddScoped<UserService>();
+builder.Services.AddScoped<UserService>(); 
+builder.Services.AddSingleton<UserDataService>();
+
 
 var app = builder.Build();
 
@@ -54,6 +57,17 @@ app.UseFileServer(new FileServerOptions()
     EnableDirectoryBrowsing = false,
     RequestPath = "/Thumb"
 });
+
+var fileServingOptions = new FileServerOptions()
+{
+    FileProvider = new PhysicalFileProvider("C:\\NextStream\\Movies"),
+    EnableDirectoryBrowsing = false,
+    RequestPath = "/Movies"
+};
+
+fileServingOptions.StaticFileOptions.ServeUnknownFileTypes = true;
+
+app.UseFileServer(fileServingOptions);
 
 app.UseStaticFiles();
 app.UseAntiforgery();

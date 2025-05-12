@@ -1,0 +1,55 @@
+﻿@page "/Watch"
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.WebUtilities
+@using NextStream.Services
+@using NextStream.Services.DataTransferObjects
+@attribute [Authorize]
+@layout Layout.EmptyLayout
+@inject MovieService movieService
+@inject NavigationManager Navigator
+
+@{
+    var uri = Navigator.ToAbsoluteUri(Navigator.Uri);
+    int? movieId = null;
+    if (QueryHelpers.ParseQuery(uri.Query).TryGetValue("movie", out var _movieId))
+    {
+        movieId = Convert.ToInt32(_movieId);
+    }
+    MovieWatchingDTO? movie = null;
+    if(movieId != null)
+    {
+        movie = movieService.GetMovieToWatch(movieId.Value);
+    }
+}
+
+<script src="/lib/video.js/video.min.js"></script>
+<link rel="stylesheet" href="/lib/video.js/video-js.min.css" />
+
+@if (movie != null)
+{
+    <video onload="loadMovie" style="height:100vh; width:100vw;" id="movie_player" class="video-js vjs-default-skin" controls preload="auto"
+           data-setup='{}'>
+        <source src="@movie.URL" type='application/x-mpegURL'>
+    </video>
+}
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        var player = videojs('movie_player', {
+            autoplay: 'play',
+            enableSmoothSeeking: true
+        });
+        console.log("test")
+        const videoElement = player.el();
+        if (videoElement.requestFullscreen) {
+            videoElement.requestFullscreen();
+        } else if (videoElement.webkitRequestFullscreen) {
+            videoElement.webkitRequestFullscreen();
+        } else if (videoElement.msRequestFullscreen) {
+            videoElement.msRequestFullscreen();
+        }
+    });
+</script>
+
+@code {
+}
