@@ -15,11 +15,17 @@
 
   <ItemGroup>
     <PackageReference Include="Aspire.Hosting.Testing" Version="8.1.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="9.0.5" />
+    <PackageReference Include="Moq" Version="4.20.72" />
+    <PackageReference Include="Moq.EntityFrameworkCore" Version="9.0.0.5" />
     <PackageReference Include="MSTest" Version="3.4.3" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\MovieScraper\NextStream.MovieScraper.csproj" />
+    <ProjectReference Include="..\NextStream.ApiService\NextStream.ApiService.csproj" />
     <ProjectReference Include="..\NextStream.AppHost\NextStream.AppHost.csproj" />
+    <ProjectReference Include="..\NextStream.Services\NextStream.Services.csproj" />
   </ItemGroup>
 
   <ItemGroup>
